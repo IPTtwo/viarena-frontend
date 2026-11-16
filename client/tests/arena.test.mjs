@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getArenaEvents } from '../src/features/participant/functions/arena.js';
+import { getArenaEvents } from '../src/functions/arena.js';
 
 const currentTime = new Date('2026-11-12T12:00:00Z');
 const event = (id, start, end, visibility = 'Published') => ({ id, start, end, visibility });
