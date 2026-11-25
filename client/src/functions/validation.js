@@ -12,7 +12,11 @@ export function registrationEligibility(event, count, registered = false, at = n
       reason: 'You are already registered for this event.',
     };
   if (new Date(event.end) <= at || new Date(event.start) <= at)
-    return { allowed: false, code: 'ended', reason: 'This event has already started or ended.' };
+    return {
+      allowed: false,
+      code: 'ended',
+      reason: 'This event has already started or ended.',
+    };
   if (new Date(event.deadline) <= at)
     return { allowed: false, code: 'closed', reason: 'Registration has closed.' };
   if (count >= Number(event.capacity))
@@ -44,7 +48,8 @@ export function validateEvent(fields, publish = false, registeredCount = 0, at =
     return 'Enter valid event dates.';
   if (new Date(fields.start) >= new Date(fields.end))
     return 'Event end time must be after start time.';
-  if (new Date(fields.start) <= at) return 'The event start must be in the future when publishing.';
+  if (new Date(fields.start) <= at)
+    return 'The event start must be in the future when publishing.';
   if (new Date(fields.deadline) > new Date(fields.start))
     return 'Registration must close before the event begins.';
   return '';

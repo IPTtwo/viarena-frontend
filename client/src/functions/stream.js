@@ -13,7 +13,9 @@ export function streamEmbedUrl(raw) {
     }
     if (url.hostname === 'youtu.be') {
       const id = url.pathname.slice(1);
-      return /^[A-Za-z0-9_-]{11}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : '';
+      return /^[A-Za-z0-9_-]{11}$/.test(id)
+        ? `https://www.youtube-nocookie.com/embed/${id}`
+        : '';
     }
     return '';
   } catch {
