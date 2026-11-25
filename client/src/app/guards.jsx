@@ -1,23 +1,31 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useStore } from '../state/StoreProvider';
-import { canCreateEvent, hasRole } from '../functions/domain';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useStore } from "../state/StoreProvider";
+import { canCreateEvent, hasRole } from "../functions/domain";
 
 export function Require({ children, role }) {
   const { user } = useStore();
   const location = useLocation();
 
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!user)
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (role && !hasRole(user, role)) return <Navigate to="/403" replace />;
   return children;
 }
 
 export function RequireOrganizerWorkspace({ children }) {
-  const { user } = useStore();
+  const { user, events } = useStore();
   const location = useLocation();
 
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  if (!canCreateEvent(user)) return <Navigate to="/403" replace />;
+  if (!user)
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (
+    !canCreateEvent(user) &&
+    !events.some((event) =>
+      event.coOrganizers?.some((staff) => staff.userId === user.id),
+    )
+  )
+    return <Navigate to="/403" replace />;
   return children;
 }
 
