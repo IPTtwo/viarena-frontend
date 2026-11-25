@@ -29,11 +29,11 @@ export function CoOrganizerManagement() {
     );
   }
 
-  const assign = (eventSubmit) => {
+  const assign = async (eventSubmit) => {
     eventSubmit.preventDefault();
 
     try {
-      setCoOrganizer(eventId, memberId, permissions);
+      await setCoOrganizer(eventId, memberId, permissions);
       notify('Co-organizer permissions saved.');
       setMemberId('');
       setPermissions([]);
@@ -59,11 +59,11 @@ export function CoOrganizerManagement() {
               <select
                 required
                 value={memberId}
-                onChange={(event) => {
-                  setMemberId(event.target.value);
+                onChange={(change) => {
+                  setMemberId(change.target.value);
                   setPermissions(
                     event.coOrganizers?.find(
-                      (coOrganizer) => coOrganizer.userId === event.target.value,
+                      (coOrganizer) => coOrganizer.userId === change.target.value,
                     )?.permissions || [],
                   );
                 }}
@@ -110,19 +110,22 @@ export function CoOrganizerManagement() {
           {event.coOrganizers?.map((item) => (
             <div className="simple-row" key={item.userId}>
               <div className="grow">
-                <h3>{users.find((user) => user.id === item.userId)?.name || 'Unknown account'}</h3>
+                <h3>
+                  {users.find((user) => user.id === item.userId)?.name || 'Unknown account'}
+                </h3>
                 <p>
                   {item.permissions
                     .map(
                       (permission) =>
-                        availablePermissions.find(([key]) => key === permission)?.[1] || permission,
+                        availablePermissions.find(([key]) => key === permission)?.[1] ||
+                        permission,
                     )
                     .join(', ') || 'Read-only assignment'}
                 </p>
               </div>
               <Button
                 variant="outline"
-                onClick={() => {
+                onClick={async () => {
                   setMemberId(item.userId);
                   setPermissions(item.permissions);
                 }}
@@ -145,8 +148,8 @@ export function CoOrganizerManagement() {
           description="This will revoke all event-specific staff permissions."
           danger
           onClose={() => setPending(null)}
-          onConfirm={() => {
-            setCoOrganizer(eventId, pending.userId, [], true);
+          onConfirm={async () => {
+            await setCoOrganizer(eventId, pending.userId, [], true);
             setPending(null);
             notify('Co-organizer removed.');
           }}

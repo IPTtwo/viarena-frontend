@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../../state/StoreProvider';
-import { Badge, Button, Card, Confirm, dateTimeText, Empty, PageHeader } from '../../../components';
+import {
+  Badge,
+  Button,
+  Card,
+  Confirm,
+  dateTimeText,
+  Empty,
+  PageHeader,
+} from '../../../components';
 
 export function MyEvents() {
   const { events, registrations, user, cancelRegistration, notify } = useStore();
@@ -16,7 +24,8 @@ export function MyEvents() {
       if (tab === 'Canceled') return r.status === 'Canceled';
       if (r.status !== 'Registered') return false;
       if (tab === 'Past') return new Date(e.end) <= new Date();
-      if (tab === 'Live') return new Date(e.start) <= new Date() && new Date(e.end) > new Date();
+      if (tab === 'Live')
+        return new Date(e.start) <= new Date() && new Date(e.end) > new Date();
       return new Date(e.start) > new Date();
     });
   return (
@@ -59,7 +68,9 @@ export function MyEvents() {
                   {dateTimeText(r.event.start)}: {r.event.venue}
                 </p>
                 <div className="tag-row">
-                  <Badge tone={r.status === 'Registered' ? 'success' : 'danger'}>{r.status}</Badge>
+                  <Badge tone={r.status === 'Registered' ? 'success' : 'danger'}>
+                    {r.status}
+                  </Badge>
                   <Badge tone={new Date(r.event.end) <= new Date() ? 'neutral' : 'info'}>
                     {new Date(r.event.end) <= new Date()
                       ? 'Ended'
@@ -95,9 +106,9 @@ export function MyEvents() {
           danger
           confirmLabel="Cancel registration"
           onClose={() => setConfirm(null)}
-          onConfirm={() => {
+          onConfirm={async () => {
             try {
-              cancelRegistration(confirm.id);
+              await cancelRegistration(confirm.id);
               notify('Registration canceled.');
             } catch (err) {
               notify(err.message, 'error');
