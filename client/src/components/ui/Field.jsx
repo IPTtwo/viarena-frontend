@@ -10,7 +10,11 @@ export function Field({ label, error, hint, children }) {
         'aria-describedby': error ? `${id}-error` : hint ? `${id}-hint` : undefined,
       });
     if (node.props.children)
-      return React.cloneElement(node, undefined, React.Children.map(node.props.children, attach));
+      return React.cloneElement(
+        node,
+        undefined,
+        React.Children.map(node.props.children, attach),
+      );
     return node;
   };
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 export function Confirm({
@@ -8,8 +8,11 @@ export function Confirm({
   danger = false,
   onConfirm,
   onClose,
+  children,
 }) {
   const ref = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   useEffect(() => {
     const previous = document.activeElement;
     ref.current?.focus();
@@ -26,7 +29,10 @@ export function Confirm({
     };
   }, [onClose]);
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="modal-backdrop"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div
         className="modal"
         role="dialog"
@@ -42,11 +48,31 @@ export function Confirm({
           </button>
         </div>
         <p className="subtext">{description}</p>
+        {children}
+        {error && (
+          <p role="alert" className="form-alert">
+            {error}
+          </p>
+        )}
         <div className="actions">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm}>
+          <Button
+            disabled={busy}
+            variant={danger ? 'danger' : 'primary'}
+            onClick={async () => {
+              setBusy(true);
+              setError('');
+              try {
+                await onConfirm();
+              } catch (err) {
+                setError(err.message);
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
             {confirmLabel}
           </Button>
         </div>
