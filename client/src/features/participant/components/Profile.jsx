@@ -17,7 +17,7 @@ export function Profile({ edit = false }) {
   });
   const [error, setError] = useState('');
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault();
 
     if (form.name.trim().length < 2) {
@@ -29,7 +29,7 @@ export function Profile({ edit = false }) {
     }
 
     try {
-      editProfile(form);
+      await editProfile(form);
       notify('Profile updated.');
       navigate('/profile');
     } catch (err) {
@@ -76,7 +76,9 @@ export function Profile({ edit = false }) {
               {user.roles.map((role) => (
                 <Badge
                   key={role}
-                  tone={role === 'Admin' ? 'info' : role === 'Organizer' ? 'success' : 'neutral'}
+                  tone={
+                    role === 'Admin' ? 'info' : role === 'Organizer' ? 'success' : 'neutral'
+                  }
                 >
                   {role}
                 </Badge>
@@ -96,7 +98,10 @@ export function Profile({ edit = false }) {
               />
             </Field>
 
-            <Field label="School email" hint="Email changes are managed by campus administration.">
+            <Field
+              label="School email"
+              hint="Email changes are managed by campus administration."
+            >
               <input value={user.email} readOnly />
             </Field>
 
@@ -123,7 +128,7 @@ export function Profile({ edit = false }) {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(event) => {
+                onChange={async (event) => {
                   const file = event.target.files?.[0];
                   if (!file) return;
 

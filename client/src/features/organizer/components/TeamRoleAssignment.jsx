@@ -15,9 +15,9 @@ export function TeamRoleAssignment() {
         <Empty title="Role assignment unavailable" />
       </Card>
     );
-  const apply = () => {
+  const apply = async () => {
     try {
-      assignTeamRole(teamId, pending.userId, pending.role, pending.remove);
+      await assignTeamRole(teamId, pending.userId, pending.role, pending.remove);
       notify('Team responsibility updated.');
     } catch (err) {
       notify(err.message, 'error');
@@ -60,7 +60,9 @@ export function TeamRoleAssignment() {
                 {team.managerId === member.id ? (
                   <Button
                     variant="outline"
-                    onClick={() => setPending({ userId: member.id, role: 'Manager', remove: true })}
+                    onClick={() =>
+                      setPending({ userId: member.id, role: 'Manager', remove: true })
+                    }
                   >
                     Remove Manager
                   </Button>

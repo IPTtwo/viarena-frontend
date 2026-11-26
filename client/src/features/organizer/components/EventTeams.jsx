@@ -35,10 +35,10 @@ export function EventTeams() {
     .filter(Boolean);
   const code = joinCodes.find((c) => c.eventId === eventId);
   const joinUrl = `${window.location.origin}/events/${eventId}${code?.enabled ? `?join=${code.code}` : ''}`;
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     try {
-      createTeam(eventId, name);
+      await createTeam(eventId, name);
       setName('');
       setError('');
       notify('Event team created.');
@@ -46,9 +46,9 @@ export function EventTeams() {
       setError(err.message);
     }
   };
-  const assign = (team) => {
+  const assign = async (team) => {
     try {
-      placeMember(team.id, selection[team.id]);
+      await placeMember(team.id, selection[team.id]);
       notify('Participant assigned to team.');
       setSelection((v) => ({ ...v, [team.id]: '' }));
     } catch (err) {
@@ -96,15 +96,24 @@ export function EventTeams() {
               <Clipboard size={16} /> Copy link
             </Button>
             <Button
-              onClick={() => {
-                generateJoinCode(eventId);
-                notify('New join code generated.');
+              onClick={async () => {
+                try {
+                  await generateJoinCode(eventId);
+                  notify('New join code generated.');
+                } catch (err) {
+                  notify(err.message, 'error');
+                }
               }}
             >
               Generate code
             </Button>
             {code?.enabled && (
-              <Button variant="danger" onClick={() => disableJoinCode(eventId)}>
+              <Button
+                variant="danger"
+                onClick={() =>
+                  disableJoinCode(eventId).catch((err) => notify(err.message, 'error'))
+                }
+              >
                 Disable code
               </Button>
             )}
@@ -192,9 +201,9 @@ export function EventTeams() {
                   )}
                   <Button
                     variant="outline"
-                    onClick={() => {
+                    onClick={async () => {
                       try {
-                        placeMember(team.id, member.id, true);
+                        await placeMember(team.id, member.id, true);
                         notify('Member removed.');
                       } catch (err) {
                         notify(err.message, 'error');

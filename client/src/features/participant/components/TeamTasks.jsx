@@ -2,12 +2,29 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useStore } from '../../../state/StoreProvider';
-import { Badge, Button, Card, Empty, Field, PageHeader, dateTimeText } from '../../../components';
+import {
+  Badge,
+  Button,
+  Card,
+  Empty,
+  Field,
+  PageHeader,
+  dateTimeText,
+} from '../../../components';
 import { StatusBadge } from '../../../components';
 export function TeamTasks() {
   const { eventId, teamId } = useParams();
-  const { teams, users, events, user, tasks, canManageTeams, saveTask, updateTaskStatus, notify } =
-    useStore();
+  const {
+    teams,
+    users,
+    events,
+    user,
+    tasks,
+    canManageTeams,
+    saveTask,
+    updateTaskStatus,
+    notify,
+  } = useStore();
   const team = teams.find((t) => t.id === teamId && t.eventId === eventId);
   const event = events.find((e) => e.id === eventId);
   const allowed = team && (team.memberIds.includes(user.id) || canManageTeams(event));
@@ -18,13 +35,16 @@ export function TeamTasks() {
   if (!allowed)
     return (
       <Card>
-        <Empty title="Team unavailable" description="This team is not assigned to your account." />
+        <Empty
+          title="Team unavailable"
+          description="This team is not assigned to your account."
+        />
       </Card>
     );
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     try {
-      saveTask(team.id, form);
+      await saveTask(team.id, form);
       setForm({ title: '', description: '', assigneeId: '', due: '' });
       setError('');
       setOpen(false);
@@ -117,8 +137,8 @@ export function TeamTasks() {
                 <h3>{task.title}</h3>
                 <p>{task.description}</p>
                 <p>
-                  Assigned to {users.find((u) => u.id === task.assigneeId)?.name || 'Unknown'}, Due{' '}
-                  {dateTimeText(task.due)}
+                  Assigned to {users.find((u) => u.id === task.assigneeId)?.name || 'Unknown'},
+                  Due {dateTimeText(task.due)}
                 </p>
               </div>
               <StatusBadge status={task.status} />
@@ -126,9 +146,9 @@ export function TeamTasks() {
                 <select
                   aria-label={`Status of ${task.title}`}
                   value={task.status}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     try {
-                      updateTaskStatus(task.id, e.target.value);
+                      await updateTaskStatus(task.id, e.target.value);
                       notify('Task updated.');
                     } catch (err) {
                       notify(err.message, 'error');

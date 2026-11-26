@@ -14,7 +14,8 @@ import {
 } from '../../../components';
 export function ScheduleEditor() {
   const { eventId } = useParams();
-  const { events, schedules, canManageSchedule, saveSchedule, removeSchedule, notify } = useStore();
+  const { events, schedules, canManageSchedule, saveSchedule, removeSchedule, notify } =
+    useStore();
   const event = events.find((e) => e.id === eventId);
   const items = schedules
     .filter((s) => s.eventId === eventId)
@@ -37,10 +38,10 @@ export function ScheduleEditor() {
     setOpen(false);
     setError('');
   };
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     try {
-      saveSchedule(eventId, form, editing);
+      await saveSchedule(eventId, form, editing);
       notify('Schedule saved.');
       reset();
     } catch (err) {
@@ -55,7 +56,7 @@ export function ScheduleEditor() {
         description="Only authorized event organizers can change official sessions."
         action={
           <Button
-            onClick={() => {
+            onClick={async () => {
               reset();
               setOpen(true);
             }}
@@ -138,7 +139,7 @@ export function ScheduleEditor() {
             <div className="actions">
               <Button
                 variant="outline"
-                onClick={() => {
+                onClick={async () => {
                   setEditing(item.id);
                   setForm({
                     title: item.title,
@@ -159,7 +160,10 @@ export function ScheduleEditor() {
           </div>
         ))}
         {!items.length && (
-          <Empty title="No sessions added" description="Create a schedule item for this event." />
+          <Empty
+            title="No sessions added"
+            description="Create a schedule item for this event."
+          />
         )}
       </Card>
       {deleting && (
@@ -169,8 +173,8 @@ export function ScheduleEditor() {
           danger
           confirmLabel="Delete session"
           onClose={() => setDeleting(null)}
-          onConfirm={() => {
-            removeSchedule(eventId, deleting.id);
+          onConfirm={async () => {
+            await removeSchedule(eventId, deleting.id);
             setDeleting(null);
             notify('Session removed.');
           }}

@@ -72,9 +72,9 @@ export function ParticipationManager() {
           description="The participant's certificate eligibility will be updated."
           confirmLabel="Confirm"
           onClose={() => setPending(null)}
-          onConfirm={() => {
+          onConfirm={async () => {
             try {
-              confirmParticipation(eventId, pending.userId, pending.verified);
+              await confirmParticipation(eventId, pending.userId, pending.verified);
               notify('Participation record updated.');
             } catch (err) {
               notify(err.message, 'error');

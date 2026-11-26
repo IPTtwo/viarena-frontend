@@ -88,7 +88,9 @@ export function CalendarView() {
               Next
             </Button>
           </div>
-          <strong>{cursor.toLocaleDateString('en-PH', { month: 'long', year: 'numeric' })}</strong>
+          <strong>
+            {cursor.toLocaleDateString('en-PH', { month: 'long', year: 'numeric' })}
+          </strong>
           <div className="tabs" aria-label="Calendar layout">
             {['Month', 'Week', 'List'].map((t) => (
               <button key={t} onClick={() => setMode(t)} className={mode === t ? 'active' : ''}>
@@ -131,7 +133,9 @@ export function CalendarView() {
               <div className="simple-row" key={`${e.kind}-${e.id}`}>
                 <div className="calendar-tile">
                   <strong>{new Date(e.date).getDate()}</strong>
-                  <small>{new Date(e.date).toLocaleDateString('en-PH', { month: 'short' })}</small>
+                  <small>
+                    {new Date(e.date).toLocaleDateString('en-PH', { month: 'short' })}
+                  </small>
                 </div>
                 <div className="grow">
                   <h3>{e.title}</h3>
@@ -140,7 +144,9 @@ export function CalendarView() {
                   </p>
                 </div>
                 <Badge
-                  tone={e.kind === 'Task' ? 'warning' : e.kind === 'Session' ? 'info' : 'success'}
+                  tone={
+                    e.kind === 'Task' ? 'warning' : e.kind === 'Session' ? 'info' : 'success'
+                  }
                 >
                   {e.kind}
                 </Badge>

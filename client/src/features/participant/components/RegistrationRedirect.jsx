@@ -15,9 +15,9 @@ export function RegistrationRedirect() {
   const event = events.find((e) => e.id === eventId);
   if (!event || event.visibility !== 'Published') return <NotFound />;
   const status = registrationEligibility(event, count(event.id), isRegistered(event.id));
-  const submit = () => {
+  const submit = async () => {
     try {
-      register(event.id);
+      await register(event.id);
       notify('Registration confirmed.');
       navigate('/my-events', { replace: true });
     } catch (err) {
