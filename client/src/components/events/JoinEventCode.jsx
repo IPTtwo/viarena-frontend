@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Field } from '../index';
-import { useStore } from '../../state/StoreProvider';
+import { api } from '../../services/api.js';
 export function JoinEventCode() {
-  const { joinCodes, events } = useStore();
   const navigate = useNavigate();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const item = joinCodes.find(
-      (c) => c.enabled && c.code.toUpperCase() === code.trim().toUpperCase(),
-    );
-    const event = events.find((e) => e.id === item?.eventId && e.visibility === 'Published');
-    if (!event) {
-      setError('This event code is invalid or unavailable.');
-      return;
+    try {
+      const { eventId } = await api(`/workspace/join/${encodeURIComponent(code.trim())}`);
+      setError('');
+      navigate(`/events/${eventId}`);
+    } catch (err) {
+      setError(err.message);
     }
-    setError('');
-    navigate(`/events/${event.id}?join=${encodeURIComponent(item.code)}`);
   };
   return (
     <Card className="join-code-card">

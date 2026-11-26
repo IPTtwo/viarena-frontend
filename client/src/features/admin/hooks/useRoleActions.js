@@ -4,20 +4,21 @@ import { useStore } from '../../../state/StoreProvider';
 
 export function useRoleActions() {
   const { setOrganizerRole, notify } = useStore();
-  const [pending, setPending] = useState(null);
-
-  const apply = () => {
-    const { member, enable } = pending;
-
-    try {
-      setOrganizerRole(member.id, enable);
-      notify(enable ? 'Organizer role assigned.' : 'Organizer role revoked.');
-    } catch (error) {
-      notify(error.message, 'error');
-    } finally {
-      setPending(null);
-    }
+  const [pending, updatePending] = useState(null);
+  const [reason, setReason] = useState('');
+  const setPending = (value) => {
+    updatePending(value);
+    setReason('');
   };
 
-  return { pending, setPending, apply };
+  const apply = async () => {
+    const { member, enable } = pending;
+
+    if (reason.trim().length < 5) throw new Error('Enter a reason with at least 5 characters.');
+    await setOrganizerRole(member.id, enable, reason);
+    notify(enable ? 'Organizer role assigned.' : 'Organizer role revoked.');
+    setPending(null);
+  };
+
+  return { pending, setPending, apply, reason, setReason };
 }

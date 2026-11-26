@@ -39,7 +39,10 @@ export function MyTeams() {
                 <p className="subtext">{event?.title}</p>
                 <p>
                   {t.memberIds.length} members,{' '}
-                  {tasks.filter((task) => task.teamId === t.id && task.status !== 'Done').length}{' '}
+                  {
+                    tasks.filter((task) => task.teamId === t.id && task.status !== 'Done')
+                      .length
+                  }{' '}
                   open tasks
                 </p>
                 <Link className="button outline" to={`/events/${t.eventId}/teams/${t.id}`}>

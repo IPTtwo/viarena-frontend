@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react
 import { ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 import { useStore } from '../../../state/StoreProvider';
+import { api } from '../../../services/api.js';
 import { validSchoolEmail } from '../../../functions/domain';
 import { Button, Card, Field } from '../../../components';
 
@@ -88,38 +89,21 @@ export function Auth({ mode }) {
 
     try {
       if (mode === 'forgot' || mode === 'reset') {
-        const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
-        if (!baseUrl) {
-          throw new Error(
-            'Password recovery requires your campus account service. Please contact your campus administrator.',
-          );
-        }
-
         const token = params.get('token');
 
         if (mode === 'reset' && !token) {
           throw new Error('Your password reset link is missing or invalid.');
         }
 
-        const endpoint = `${baseUrl.replace(/\/$/, '')}/auth/${
-          mode === 'forgot' ? 'forgot-password' : 'reset-password'
-        }`;
+        const endpoint = `/auth/${mode === 'forgot' ? 'forgot-password' : 'reset-password'}`;
 
         const payload =
           mode === 'forgot' ? { email: form.email } : { token, password: form.password };
 
-        const response = await fetch(endpoint, {
+        await api(endpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: payload,
         });
-
-        if (!response.ok) {
-          throw new Error(
-            'The request could not be completed. Check your details or contact your administrator.',
-          );
-        }
 
         setDone(true);
         return;
@@ -141,7 +125,11 @@ export function Auth({ mode }) {
   };
 
   const eyebrowText =
-    mode === 'signup' ? 'CREATE ACCOUNT' : mode === 'login' ? 'SECURE SIGN IN' : 'ACCOUNT RECOVERY';
+    mode === 'signup'
+      ? 'CREATE ACCOUNT'
+      : mode === 'login'
+        ? 'SECURE SIGN IN'
+        : 'ACCOUNT RECOVERY';
   const heading =
     mode === 'signup'
       ? 'Join ViArena'
@@ -174,7 +162,9 @@ export function Auth({ mode }) {
             <br />
             <em>Celebrate.</em>
           </h1>
-          <p>Discover tournaments, connect with your campus, and celebrate your achievements.</p>
+          <p>
+            Discover tournaments, connect with your campus, and celebrate your achievements.
+          </p>
         </div>
         <p className="auth-tagline">We are ONE.</p>
       </div>

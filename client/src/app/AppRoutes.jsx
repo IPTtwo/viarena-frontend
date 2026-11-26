@@ -226,7 +226,10 @@ export function AppRoutes() {
       </Route>
       <Route path="/access" element={<Denied />} />
       <Route path="/admin/requests" element={<Denied />} />
-      <Route path="/organizer/create" element={<Navigate to="/organizer/events/new" replace />} />
+      <Route
+        path="/organizer/create"
+        element={<Navigate to="/organizer/events/new" replace />}
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

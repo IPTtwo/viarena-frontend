@@ -5,26 +5,42 @@ import { useStore } from '../../../state/StoreProvider';
 import { Badge, Button, Card, Empty, Field, PageHeader } from '../../../components';
 export function TeamDetail() {
   const { eventId, teamId } = useParams();
-  const { teams, users, events, user, tasks, canManageTeams, registrations, placeMember, notify } =
-    useStore();
+  const {
+    teams,
+    users,
+    events,
+    user,
+    tasks,
+    canManageTeams,
+    registrations,
+    placeMember,
+    notify,
+  } = useStore();
+  const [selected, setSelected] = useState('');
   const team = teams.find((t) => t.id === teamId && t.eventId === eventId);
   const event = events.find((e) => e.id === eventId);
   const allowed = team && (team.memberIds.includes(user.id) || canManageTeams(event));
   if (!allowed)
     return (
       <Card>
-        <Empty title="Team unavailable" description="You can only view teams assigned to you." />
+        <Empty
+          title="Team unavailable"
+          description="You can only view teams assigned to you."
+        />
       </Card>
     );
-  const [selected, setSelected] = useState('');
   const eligible = registrations
     .filter(
       (r) =>
-        r.eventId === eventId && r.status === 'Registered' && !team.memberIds.includes(r.userId),
+        r.eventId === eventId &&
+        r.status === 'Registered' &&
+        !team.memberIds.includes(r.userId),
     )
     .map((r) => users.find((u) => u.id === r.userId))
     .filter(Boolean);
-  const memberNames = team.memberIds.map((id) => users.find((u) => u.id === id)).filter(Boolean);
+  const memberNames = team.memberIds
+    .map((id) => users.find((u) => u.id === id))
+    .filter(Boolean);
   const manager = user.id === team.managerId;
   const eventStaff = canManageTeams(event);
   return (
@@ -81,9 +97,9 @@ export function TeamDetail() {
               </Field>
               <Button
                 disabled={!selected}
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    placeMember(team.id, selected);
+                    await placeMember(team.id, selected);
                     notify('Member added.');
                     setSelected('');
                   } catch (err) {

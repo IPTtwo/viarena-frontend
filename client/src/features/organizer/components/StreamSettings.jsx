@@ -21,10 +21,10 @@ export function StreamSettings() {
         <Empty title="Stream settings unavailable" />
       </Card>
     );
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     try {
-      saveStream(eventId, form);
+      await saveStream(eventId, form);
       notify('Stream settings saved.');
       setError('');
     } catch (err) {

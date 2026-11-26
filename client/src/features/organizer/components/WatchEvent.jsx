@@ -49,7 +49,9 @@ export function WatchEvent() {
           ) : (
             <div className="stream-empty">
               <Video size={40} />
-              <h2>{stream.url ? 'Embedded viewing unavailable' : 'Broadcast not available yet'}</h2>
+              <h2>
+                {stream.url ? 'Embedded viewing unavailable' : 'Broadcast not available yet'}
+              </h2>
               <p>Check the stream schedule or open the official broadcast externally.</p>
             </div>
           )}

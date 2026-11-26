@@ -100,9 +100,9 @@ export function AdminEvents() {
             users.find((user) => user.id === pending.userId)?.name
           }? This administrative action will be recorded.`}
           onClose={() => setPending(null)}
-          onConfirm={() => {
+          onConfirm={async () => {
             try {
-              reassignEventOwner(pending.eventId, pending.userId);
+              await reassignEventOwner(pending.eventId, pending.userId);
               notify('Event owner updated.');
             } catch (err) {
               notify(err.message, 'error');

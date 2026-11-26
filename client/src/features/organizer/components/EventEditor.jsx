@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Check, Clock3 } from 'lucide-react';
 import { useStore } from '../../../state/StoreProvider';
-import { categories } from '../../../data/fixtures';
+import { categories } from '../../../data/categories';
 import { validateEvent } from '../../../functions/domain';
 import {
   Button,
@@ -46,10 +46,10 @@ function EventEditor() {
     setForm((f) => ({ ...f, [k]: v }));
     setError('');
   };
-  const save = (visibility) => {
+  const save = async (visibility) => {
     const fields = { ...form, visibility };
     try {
-      const id = saveEvent(fields, eventId);
+      const id = await saveEvent(fields, eventId);
       notify(visibility === 'Published' ? 'Event published successfully.' : 'Draft saved.');
       navigate(`/organizer/events/${id}/edit`, { replace: true });
     } catch (err) {
@@ -71,7 +71,10 @@ function EventEditor() {
       !!form.start && !!form.end && new Date(form.start) < new Date(form.end),
     ],
     ['Venue and capacity', !!form.venue.trim() && Number(form.capacity) >= 1],
-    ['Registration deadline', !!form.deadline && new Date(form.deadline) <= new Date(form.start)],
+    [
+      'Registration deadline',
+      !!form.deadline && new Date(form.deadline) <= new Date(form.start),
+    ],
   ];
   return (
     <>
@@ -93,9 +96,9 @@ function EventEditor() {
           </div>
           <form
             className="stack-form"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              save(current?.visibility === 'Published' ? 'Published' : 'Draft');
+              await save(current?.visibility === 'Published' ? 'Published' : 'Draft');
             }}
           >
             <Field label="Event title">
@@ -212,7 +215,11 @@ function EventEditor() {
                 </Button>
               )}
               {current?.visibility === 'Published' && (
-                <Button type="button" variant="outline" onClick={() => setUnpublishConfirm(true)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setUnpublishConfirm(true)}
+                >
                   Unpublish
                 </Button>
               )}
@@ -229,8 +236,8 @@ function EventEditor() {
           ))}
           <hr />
           <p className="subtext">
-            Published events appear in Explore Events. Only the owner or authorized staff can edit
-            this event.
+            Published events appear in Explore Events. Only the owner or authorized staff can
+            edit this event.
           </p>
           {current?.updatedAt && (
             <p className="subtext">Last updated: {dateTimeText(current.updatedAt)}</p>
@@ -249,9 +256,9 @@ function EventEditor() {
           description="The event will become visible to everyone in Explore Events."
           confirmLabel="Publish event"
           onClose={() => setPublishConfirm(false)}
-          onConfirm={() => {
+          onConfirm={async () => {
             setPublishConfirm(false);
-            save('Published');
+            await save('Published');
           }}
         />
       )}
@@ -262,9 +269,9 @@ function EventEditor() {
           confirmLabel="Unpublish event"
           danger
           onClose={() => setUnpublishConfirm(false)}
-          onConfirm={() => {
+          onConfirm={async () => {
             setUnpublishConfirm(false);
-            save('Draft');
+            await save('Draft');
           }}
         />
       )}

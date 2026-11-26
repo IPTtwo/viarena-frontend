@@ -2,7 +2,7 @@ import { JoinEventCode } from '../../../components/events/JoinEventCode';
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useStore } from '../../../state/StoreProvider';
-import { categories } from '../../../data/fixtures';
+import { categories } from '../../../data/categories';
 import { eventStatus } from '../../../functions/event';
 import { Button, Card, Empty, PageHeader } from '../../../components';
 import { EventCard } from './EventCard';

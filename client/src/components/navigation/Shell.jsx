@@ -49,7 +49,7 @@ const adminLinks = [
   { to: '/admin/audit', label: 'Audit Log', icon: Activity },
 ];
 export function Shell({ children }) {
-  const { user, events, teams = [], logout, flash, setFlash } = useStore();
+  const { user, events, teams = [], logout, flash, setFlash, notify, pending } = useStore();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -60,7 +60,9 @@ export function Shell({ children }) {
   );
   const teamAssigned = teams.some(
     (t) =>
-      t.memberIds.includes(user?.id) || t.managerId === user?.id || t.handlerIds.includes(user?.id),
+      t.memberIds.includes(user?.id) ||
+      t.managerId === user?.id ||
+      t.handlerIds.includes(user?.id),
   );
   const core = coreLinks.filter((l) => !l.assignedOnly || teamAssigned || organizer || admin);
   const mobileLinks = core.filter(({ to }) =>
@@ -138,9 +140,14 @@ export function Shell({ children }) {
             <button
               className="icon-button"
               aria-label="Sign out"
-              onClick={() => {
-                logout();
-                navigate('/login');
+              disabled={pending}
+              onClick={async () => {
+                try {
+                  await logout();
+                  navigate('/login');
+                } catch (error) {
+                  notify(error.message, 'error');
+                }
               }}
             >
               <LogOut size={18} />
