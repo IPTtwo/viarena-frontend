@@ -12,7 +12,7 @@ export function AdminUsers() {
   const { users, user, events } = useStore();
   const [query, setQuery] = useState('');
   const [role, setRole] = useState('All');
-  const { pending, setPending, apply } = useRoleActions();
+  const { pending, setPending, apply, reason, setReason } = useRoleActions();
 
   const filtered = useMemo(() => filterMembers(users, query, role), [users, query, role]);
 
@@ -82,7 +82,10 @@ export function AdminUsers() {
                           <Button
                             variant="outline"
                             onClick={() =>
-                              setPending({ member, enable: !member.roles.includes('Organizer') })
+                              setPending({
+                                member,
+                                enable: !member.roles.includes('Organizer'),
+                              })
                             }
                           >
                             {member.roles.includes('Organizer')
@@ -117,7 +120,18 @@ export function AdminUsers() {
           danger={!pending.enable}
           onClose={() => setPending(null)}
           onConfirm={apply}
-        />
+        >
+          <label className="field">
+            <span>Reason for role change</span>
+            <textarea
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              minLength={5}
+              maxLength={500}
+              required
+            />
+          </label>
+        </Confirm>
       )}
     </>
   );

@@ -3,14 +3,22 @@ import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
 import { useStore } from '../../../state/StoreProvider';
-import { Badge, Button, Card, Confirm, Empty, PageHeader, dateTimeText } from '../../../components';
+import {
+  Badge,
+  Button,
+  Card,
+  Confirm,
+  Empty,
+  PageHeader,
+  dateTimeText,
+} from '../../../components';
 import { useRoleActions } from '../hooks/useRoleActions';
 import { RoleBadge } from './RoleBadge';
 
 export function AdminUserDetail() {
   const { userId } = useParams();
   const { users, user, events, roleAudit } = useStore();
-  const { pending, setPending, apply } = useRoleActions();
+  const { pending, setPending, apply, reason, setReason } = useRoleActions();
 
   const member = users.find((item) => item.id === userId);
 
@@ -72,7 +80,9 @@ export function AdminUserDetail() {
             <div className="actions">
               <Button
                 variant={member.roles.includes('Organizer') ? 'danger' : 'primary'}
-                onClick={() => setPending({ member, enable: !member.roles.includes('Organizer') })}
+                onClick={() =>
+                  setPending({ member, enable: !member.roles.includes('Organizer') })
+                }
               >
                 {member.roles.includes('Organizer') ? 'Revoke Organizer' : 'Assign Organizer'}
               </Button>
@@ -139,7 +149,18 @@ export function AdminUserDetail() {
           confirmLabel={pending.enable ? 'Assign Organizer' : 'Revoke Organizer'}
           onClose={() => setPending(null)}
           onConfirm={apply}
-        />
+        >
+          <label className="field">
+            <span>Reason for role change</span>
+            <textarea
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              minLength={5}
+              maxLength={500}
+              required
+            />
+          </label>
+        </Confirm>
       )}
     </>
   );

@@ -66,7 +66,9 @@ export function OrganizerDashboard() {
                   <div className="calendar-tile">
                     <strong>{new Date(e.start).getDate()}</strong>
                     <small>
-                      {new Date(e.start).toLocaleString('en-PH', { month: 'short' }).toUpperCase()}
+                      {new Date(e.start)
+                        .toLocaleString('en-PH', { month: 'short' })
+                        .toUpperCase()}
                     </small>
                   </div>
                   <div className="grow">
@@ -108,7 +110,10 @@ export function OrganizerDashboard() {
                         {count(e.id)} of {e.capacity} registered
                       </p>
                     </div>
-                    <Link to={`/organizer/events/${e.id}/registrations`} className="button outline">
+                    <Link
+                      to={`/organizer/events/${e.id}/registrations`}
+                      className="button outline"
+                    >
                       Review
                     </Link>
                   </div>

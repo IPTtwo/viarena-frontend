@@ -1,17 +1,11 @@
-import React, { useState } from "react";
-import {
-  Link,
-  Navigate,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import React, { useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
-import { useStore } from "../../../state/StoreProvider";
-import { validSchoolEmail } from "../../../functions/domain";
-import { Button, Card, Field } from "../../../components";
-import { api } from "../../../services/api.js";
+import { useStore } from '../../../state/StoreProvider';
+import { validSchoolEmail } from '../../../functions/domain';
+import { Button, Card, Field } from '../../../components';
+import { api } from '../../../services/api.js';
 
 export function Auth({ mode }) {
   const { login, signup, notify, user } = useStore();
@@ -20,71 +14,68 @@ export function Auth({ mode }) {
   const [params] = useSearchParams();
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    studentId: "",
-    password: "",
-    confirm: "",
+    name: '',
+    email: '',
+    studentId: '',
+    password: '',
+    confirm: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState({});
 
   const updateField = (key, value) => {
     setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: "" }));
-    setError("");
+    setErrors((current) => ({ ...current, [key]: '' }));
+    setError('');
   };
 
   const returnTo =
-    location.state?.from?.startsWith("/") &&
-    !location.state.from.startsWith("//")
+    location.state?.from?.startsWith('/') && !location.state.from.startsWith('//')
       ? location.state.from
-      : "/events";
+      : '/events';
 
-  if (user && mode !== "reset") {
+  if (user && mode !== 'reset') {
     return <Navigate to="/dashboard" replace />;
   }
 
   const submit = async (event) => {
     event.preventDefault();
-    setError("");
+    setError('');
 
     const nextErrors = {};
 
-    if (!validSchoolEmail(form.email) && mode !== "reset") {
-      nextErrors.email = "Enter a valid @adnu.edu.ph email.";
+    if (!validSchoolEmail(form.email) && mode !== 'reset') {
+      nextErrors.email = 'Enter a valid @adnu.edu.ph email.';
     }
 
-    if (mode === "signup") {
+    if (mode === 'signup') {
       if (form.name.trim().length < 2) {
-        nextErrors.name = "Enter your full name.";
+        nextErrors.name = 'Enter your full name.';
       }
       if (!form.studentId.trim()) {
-        nextErrors.studentId = "Student ID is required.";
+        nextErrors.studentId = 'Student ID is required.';
       }
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(form.password)) {
-        nextErrors.password =
-          "Use 8–128 characters with uppercase, lowercase, and a number.";
+        nextErrors.password = 'Use 8–128 characters with uppercase, lowercase, and a number.';
       }
       if (form.password !== form.confirm) {
-        nextErrors.confirm = "Passwords do not match.";
+        nextErrors.confirm = 'Passwords do not match.';
       }
     }
 
-    if (mode === "login" && !form.password) {
-      nextErrors.password = "Enter your password.";
+    if (mode === 'login' && !form.password) {
+      nextErrors.password = 'Enter your password.';
     }
 
-    if (mode === "reset") {
+    if (mode === 'reset') {
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(form.password)) {
-        nextErrors.password =
-          "Use 8–128 characters with uppercase, lowercase, and a number.";
+        nextErrors.password = 'Use 8–128 characters with uppercase, lowercase, and a number.';
       }
       if (form.password !== form.confirm) {
-        nextErrors.confirm = "Passwords do not match.";
+        nextErrors.confirm = 'Passwords do not match.';
       }
     }
 
@@ -97,65 +88,58 @@ export function Auth({ mode }) {
     setBusy(true);
 
     try {
-      if (mode === "forgot" || mode === "reset") {
-        const token = params.get("token");
-        if (mode === "reset" && !token)
-          throw new Error("Your password reset link is missing or invalid.");
-        await api(
-          `/auth/${mode === "forgot" ? "forgot-password" : "reset-password"}`,
-          {
-            method: "POST",
-            body:
-              mode === "forgot"
-                ? { email: form.email.trim().toLowerCase() }
-                : { token, password: form.password },
-          },
-        );
+      if (mode === 'forgot' || mode === 'reset') {
+        const token = params.get('token');
+        if (mode === 'reset' && !token)
+          throw new Error('Your password reset link is missing or invalid.');
+        await api(`/auth/${mode === 'forgot' ? 'forgot-password' : 'reset-password'}`, {
+          method: 'POST',
+          body:
+            mode === 'forgot'
+              ? { email: form.email.trim().toLowerCase() }
+              : { token, password: form.password },
+        });
         setDone(true);
         return;
       }
 
-      if (mode === "signup") {
+      if (mode === 'signup') {
         await signup(form);
       } else {
         await login(form.email, form.password);
       }
 
-      notify(
-        mode === "signup"
-          ? "Account created successfully."
-          : "Welcome back to ViArena.",
-      );
+      notify(mode === 'signup' ? 'Account created successfully.' : 'Welcome back to ViArena.');
       navigate(returnTo, { replace: true });
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setBusy(false);
     }
   };
 
   const eyebrowText =
-    mode === "signup"
-      ? "CREATE ACCOUNT"
-      : mode === "login"
-        ? "SECURE SIGN IN"
-        : "ACCOUNT RECOVERY";
+    mode === 'signup'
+      ? 'CREATE ACCOUNT'
+      : mode === 'login'
+        ? 'SECURE SIGN IN'
+        : 'ACCOUNT RECOVERY';
   const heading =
-    mode === "signup"
-      ? "Join ViArena"
-      : mode === "login"
-        ? "Welcome back"
-        : mode === "forgot"
-          ? "Forgot password?"
-          : "Choose a new password";
+    mode === 'signup'
+      ? 'Join ViArena'
+      : mode === 'login'
+        ? 'Welcome back'
+        : mode === 'forgot'
+          ? 'Forgot password?'
+          : 'Choose a new password';
   const subtext =
-    mode === "signup"
-      ? "Create your campus account. All new accounts begin as Participants."
-      : mode === "login"
-        ? "Sign in to continue your campus experience."
-        : mode === "forgot"
-          ? "Enter your school email to request a recovery link."
-          : "Set a new password using your recovery link.";
+    mode === 'signup'
+      ? 'Create your campus account. All new accounts begin as Participants.'
+      : mode === 'login'
+        ? 'Sign in to continue your campus experience.'
+        : mode === 'forgot'
+          ? 'Enter your school email to request a recovery link.'
+          : 'Set a new password using your recovery link.';
 
   return (
     <div className="auth-layout">
@@ -173,8 +157,7 @@ export function Auth({ mode }) {
             <em>Celebrate.</em>
           </h1>
           <p>
-            Discover tournaments, connect with your campus, and celebrate your
-            achievements.
+            Discover tournaments, connect with your campus, and celebrate your achievements.
           </p>
         </div>
         <p className="auth-tagline">We are ONE.</p>
@@ -189,15 +172,11 @@ export function Auth({ mode }) {
           {done ? (
             <Card className="message-card">
               <CheckCircle2 size={28} />
-              <h2>
-                {mode === "forgot"
-                  ? "Check your school email"
-                  : "Password updated"}
-              </h2>
+              <h2>{mode === 'forgot' ? 'Check your school email' : 'Password updated'}</h2>
               <p>
-                {mode === "forgot"
-                  ? "If the account exists, recovery instructions will be sent."
-                  : "Your password has been changed. You can now sign in."}
+                {mode === 'forgot'
+                  ? 'If the account exists, recovery instructions will be sent.'
+                  : 'Your password has been changed. You can now sign in.'}
               </p>
               <Link className="button primary" to="/login">
                 Return to Sign In
@@ -205,69 +184,57 @@ export function Auth({ mode }) {
             </Card>
           ) : (
             <form onSubmit={submit} className="stack-form" noValidate>
-              {mode === "signup" && (
+              {mode === 'signup' && (
                 <Field label="Full name" error={errors.name}>
                   <input
                     autoComplete="name"
                     value={form.name}
-                    onChange={(event) =>
-                      updateField("name", event.target.value)
-                    }
+                    onChange={(event) => updateField('name', event.target.value)}
                     aria-invalid={!!errors.name}
                   />
                 </Field>
               )}
 
-              {mode !== "reset" && (
+              {mode !== 'reset' && (
                 <Field label="School email" error={errors.email}>
                   <input
                     type="email"
                     autoComplete="email"
                     value={form.email}
                     placeholder="you@adnu.edu.ph"
-                    onChange={(event) =>
-                      updateField("email", event.target.value)
-                    }
+                    onChange={(event) => updateField('email', event.target.value)}
                     aria-invalid={!!errors.email}
                   />
                 </Field>
               )}
 
-              {mode === "signup" && (
+              {mode === 'signup' && (
                 <Field label="Student ID" error={errors.studentId}>
                   <input
                     value={form.studentId}
-                    onChange={(event) =>
-                      updateField("studentId", event.target.value)
-                    }
+                    onChange={(event) => updateField('studentId', event.target.value)}
                     aria-invalid={!!errors.studentId}
                   />
                 </Field>
               )}
 
-              {mode !== "forgot" && (
+              {mode !== 'forgot' && (
                 <Field
-                  label={mode === "reset" ? "New password" : "Password"}
+                  label={mode === 'reset' ? 'New password' : 'Password'}
                   error={errors.password}
                 >
                   <div className="password-wrap">
                     <input
-                      type={showPassword ? "text" : "password"}
-                      autoComplete={
-                        mode === "login" ? "current-password" : "new-password"
-                      }
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                       value={form.password}
-                      onChange={(event) =>
-                        updateField("password", event.target.value)
-                      }
+                      onChange={(event) => updateField('password', event.target.value)}
                       aria-invalid={!!errors.password}
                     />
                     <button
                       type="button"
                       className="icon-button"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                       onClick={() => setShowPassword((current) => !current)}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -276,15 +243,13 @@ export function Auth({ mode }) {
                 </Field>
               )}
 
-              {(mode === "signup" || mode === "reset") && (
+              {(mode === 'signup' || mode === 'reset') && (
                 <Field label="Confirm password" error={errors.confirm}>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     autoComplete="new-password"
                     value={form.confirm}
-                    onChange={(event) =>
-                      updateField("confirm", event.target.value)
-                    }
+                    onChange={(event) => updateField('confirm', event.target.value)}
                     aria-invalid={!!errors.confirm}
                   />
                 </Field>
@@ -296,7 +261,7 @@ export function Auth({ mode }) {
                 </p>
               )}
 
-              {mode === "login" && (
+              {mode === 'login' && (
                 <div className="between">
                   <span className="subtext">School account</span>
                   <Link to="/forgot-password">Forgot password?</Link>
@@ -305,26 +270,26 @@ export function Auth({ mode }) {
 
               <Button type="submit" disabled={busy} className="full-width">
                 {busy
-                  ? "Please wait"
-                  : mode === "signup"
-                    ? "Create Account"
-                    : mode === "login"
-                      ? "Sign In"
-                      : mode === "forgot"
-                        ? "Send Recovery Link"
-                        : "Reset Password"}
+                  ? 'Please wait'
+                  : mode === 'signup'
+                    ? 'Create Account'
+                    : mode === 'login'
+                      ? 'Sign In'
+                      : mode === 'forgot'
+                        ? 'Send Recovery Link'
+                        : 'Reset Password'}
                 <ArrowRight size={16} />
               </Button>
             </form>
           )}
 
           <p className="auth-bottom-link">
-            {mode === "signup" ? (
+            {mode === 'signup' ? (
               <>
                 Already a member?
                 <Link to="/login">Sign in</Link>
               </>
-            ) : mode === "login" ? (
+            ) : mode === 'login' ? (
               <>
                 New to ViArena?
                 <Link to="/signup">Create an account</Link>

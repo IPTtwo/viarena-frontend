@@ -9,6 +9,22 @@ const fillLogin = async (page, email) => {
   await expect(page).toHaveURL(/\/events$/);
 };
 
+test('password recovery shows API errors and allows retrying', async ({ page }) => {
+  await page.route('**/api/auth/forgot-password', (route) =>
+    route.fulfill({ status: 503, json: { error: 'Recovery temporarily unavailable' } }),
+  );
+  await page.goto('/forgot-password');
+  await page.getByLabel('School email').fill('recovery-check@adnu.edu.ph');
+  await page.getByRole('button', { name: 'Send Recovery Link', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Recovery temporarily unavailable');
+  await page.unroute('**/api/auth/forgot-password');
+  await page.getByRole('button', { name: 'Send Recovery Link', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Send Recovery Link', exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
 test('signup, cookie session refresh, profile editing and logout', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));

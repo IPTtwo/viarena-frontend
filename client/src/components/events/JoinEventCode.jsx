@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Field } from '../index';
-import { useStore } from '../../state/StoreProvider';
 import { api } from '../../services/api.js';
 export function JoinEventCode() {
   const navigate = useNavigate();

@@ -13,3 +13,6 @@ dist/
 # Browser-test artifacts.
 playwright-report/
 test-results/
+
+# Vercel local project metadata.
+.vercel/

@@ -3,7 +3,15 @@ import { Link, useParams } from 'react-router-dom';
 import { Search, UserMinus, ArrowLeft } from 'lucide-react';
 import { useStore } from '../../../state/StoreProvider';
 import { filterRegistrations } from '../../../functions/domain';
-import { Badge, Button, Card, Confirm, Empty, PageHeader, dateTimeText } from '../../../components';
+import {
+  Badge,
+  Button,
+  Card,
+  Confirm,
+  Empty,
+  PageHeader,
+  dateTimeText,
+} from '../../../components';
 
 export function RegistrationManager() {
   const { eventId } = useParams();
@@ -47,9 +55,9 @@ export function RegistrationManager() {
     );
   const registered = count(eventId),
     total = registrations.filter((r) => r.eventId === eventId).length;
-  const doRemove = () => {
+  const doRemove = async () => {
     try {
-      cancelRegistration(eventId, pending.userId);
+      await cancelRegistration(eventId, pending.userId);
       notify('Registration removed.');
       setPending(null);
       setSelected(null);

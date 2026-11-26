@@ -5,7 +5,9 @@ import { Badge, Card, Empty, PageHeader } from '../../../components';
 
 export function LiveNow() {
   const { events } = useStore();
-  const streams = events.filter((e) => e.visibility === 'Published' && e.stream?.status === 'Live');
+  const streams = events.filter(
+    (e) => e.visibility === 'Published' && e.stream?.status === 'Live',
+  );
   return (
     <>
       <PageHeader

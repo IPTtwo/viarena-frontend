@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
   ChevronRight,
@@ -20,67 +20,57 @@ import {
   Activity,
   CalendarClock,
   CircleDot,
-} from "lucide-react";
-import { useStore } from "../../state/StoreProvider";
-import logo from "../../assets/logo.svg";
-import { canCreateEvent, canManageEvent } from "../../functions/domain";
+} from 'lucide-react';
+import { useStore } from '../../state/StoreProvider';
+import logo from '../../assets/logo.svg';
+import { canCreateEvent, canManageEvent } from '../../functions/domain';
 
 const coreLinks = [
-  { to: "/arena", label: "Arena Overview", icon: CircleDot },
-  { to: "/events", label: "Explore Events", icon: Compass },
-  { to: "/my-events", label: "My Events", icon: CalendarDays },
-  { to: "/my-teams", label: "My Teams", icon: Users, assignedOnly: true },
-  { to: "/calendar", label: "Calendar", icon: CalendarClock },
-  { to: "/live", label: "Live Now", icon: Radio },
-  { to: "/history", label: "Participation History", icon: BookOpen },
-  { to: "/certificates", label: "Certificates", icon: Award },
-  { to: "/profile", label: "My Profile", icon: User },
+  { to: '/arena', label: 'Arena Overview', icon: CircleDot },
+  { to: '/events', label: 'Explore Events', icon: Compass },
+  { to: '/my-events', label: 'My Events', icon: CalendarDays },
+  { to: '/my-teams', label: 'My Teams', icon: Users, assignedOnly: true },
+  { to: '/calendar', label: 'Calendar', icon: CalendarClock },
+  { to: '/live', label: 'Live Now', icon: Radio },
+  { to: '/history', label: 'Participation History', icon: BookOpen },
+  { to: '/certificates', label: 'Certificates', icon: Award },
+  { to: '/profile', label: 'My Profile', icon: User },
 ];
 const organizerLinks = [
   {
-    to: "/organizer",
-    label: "Organizer Dashboard",
+    to: '/organizer',
+    label: 'Organizer Dashboard',
     icon: Home,
     organizerOnly: true,
   },
   {
-    to: "/organizer/events/new",
-    label: "Create Event",
+    to: '/organizer/events/new',
+    label: 'Create Event',
     icon: Plus,
     organizerOnly: true,
   },
-  { to: "/organizer/events", label: "Managed Events", icon: CalendarDays },
+  { to: '/organizer/events', label: 'Managed Events', icon: CalendarDays },
   {
-    to: "/organizer/registrations",
-    label: "Registrations",
+    to: '/organizer/registrations',
+    label: 'Registrations',
     icon: ClipboardList,
   },
 ];
 const adminLinks = [
-  { to: "/admin", label: "Admin Dashboard", icon: Home },
-  { to: "/admin/users", label: "User Management", icon: Users },
-  { to: "/admin/events", label: "Event Oversight", icon: Shield },
-  { to: "/admin/audit", label: "Audit Log", icon: Activity },
+  { to: '/admin', label: 'Admin Dashboard', icon: Home },
+  { to: '/admin/users', label: 'User Management', icon: Users },
+  { to: '/admin/events', label: 'Event Oversight', icon: Shield },
+  { to: '/admin/audit', label: 'Audit Log', icon: Activity },
 ];
 export function Shell({ children }) {
-  const {
-    user,
-    events,
-    teams = [],
-    logout,
-    flash,
-    setFlash,
-    notify,
-  } = useStore();
+  const { user, events, teams = [], logout, flash, setFlash, notify, pending } = useStore();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const admin = user?.roles?.includes("Admin");
+  const admin = user?.roles?.includes('Admin');
   const organizer = canCreateEvent(user);
   const manageable = events.some(
-    (e) =>
-      canManageEvent(e, user) ||
-      e.coOrganizers?.some((c) => c.userId === user?.id),
+    (e) => canManageEvent(e, user) || e.coOrganizers?.some((c) => c.userId === user?.id),
   );
   const teamAssigned = teams.some(
     (t) =>
@@ -88,39 +78,33 @@ export function Shell({ children }) {
       t.managerId === user?.id ||
       t.handlerIds.includes(user?.id),
   );
-  const core = coreLinks.filter(
-    (l) => !l.assignedOnly || teamAssigned || organizer || admin,
-  );
+  const core = coreLinks.filter((l) => !l.assignedOnly || teamAssigned || organizer || admin);
   const mobileLinks = core.filter(({ to }) =>
-    ["/arena", "/events", "/my-events", "/profile"].includes(to),
+    ['/arena', '/events', '/my-events', '/profile'].includes(to),
   );
-  const sections = [{ label: "YOUR ARENA", links: core }];
+  const sections = [{ label: 'YOUR ARENA', links: core }];
   if (organizer || manageable)
     sections.push({
-      label: "ORGANIZER TOOLS",
+      label: 'ORGANIZER TOOLS',
       links: organizerLinks.filter((l) => !l.organizerOnly || organizer),
     });
-  if (admin) sections.push({ label: "ADMINISTRATION", links: adminLinks });
+  if (admin) sections.push({ label: 'ADMINISTRATION', links: adminLinks });
   const initials = user?.name
-    ?.split(" ")
+    ?.split(' ')
     .slice(0, 2)
     .map((s) => s[0])
-    .join("")
+    .join('')
     .toUpperCase();
-  const area = pathname.startsWith("/admin")
-    ? "Admin Console"
-    : pathname.startsWith("/organizer")
-      ? "Organizer Workspace"
-      : "ViArena";
+  const area = pathname.startsWith('/admin')
+    ? 'Admin Console'
+    : pathname.startsWith('/organizer')
+      ? 'Organizer Workspace'
+      : 'ViArena';
   return (
     <div className="app-shell">
-      <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
+      <aside className={`sidebar ${open ? 'sidebar-open' : ''}`}>
         <div className="sidebar-brand">
-          <Link
-            to="/arena"
-            aria-label="ViArena home"
-            onClick={() => setOpen(false)}
-          >
+          <Link to="/arena" aria-label="ViArena home" onClick={() => setOpen(false)}>
             <img src={logo} alt="" />
             <strong>ViArena</strong>
           </Link>
@@ -146,12 +130,8 @@ export function Shell({ children }) {
                   key={to}
                   to={to}
                   onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    `sidebar-link ${isActive ? "active" : ""}`
-                  }
-                  end={
-                    to === "/organizer" || to === "/admin" || to === "/events"
-                  }
+                  className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                  end={to === '/organizer' || to === '/admin' || to === '/events'}
                 >
                   <Icon size={18} />
                   {label}
@@ -169,19 +149,18 @@ export function Shell({ children }) {
             </Link>
             <div>
               <strong>{user?.name}</strong>
-              <small>
-                {admin ? "Admin" : organizer ? "Organizer" : "Participant"}
-              </small>
+              <small>{admin ? 'Admin' : organizer ? 'Organizer' : 'Participant'}</small>
             </div>
             <button
               className="icon-button"
               aria-label="Sign out"
+              disabled={pending}
               onClick={async () => {
                 try {
                   await logout();
-                  navigate("/login");
+                  navigate('/login');
                 } catch (err) {
-                  notify(err.message, "error");
+                  notify(err.message, 'error');
                 }
               }}
             >
@@ -210,11 +189,8 @@ export function Shell({ children }) {
             <span>{area}</span>
             <ChevronRight size={15} />
             <strong>
-              {pathname
-                .split("/")
-                .filter(Boolean)
-                .slice(-1)[0]
-                ?.replaceAll("-", " ") || "Explore Events"}
+              {pathname.split('/').filter(Boolean).slice(-1)[0]?.replaceAll('-', ' ') ||
+                'Explore Events'}
             </strong>
           </div>
           <div className="topbar-right">
@@ -236,28 +212,23 @@ export function Shell({ children }) {
             <NavLink
               key={to}
               to={to}
-              end={to === "/events"}
-              className={({ isActive }) =>
-                `mobile-nav-link ${isActive ? "active" : ""}`
-              }
+              end={to === '/events'}
+              className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`}
             >
               <Icon size={19} />
               <span>
-                {to === "/arena"
-                  ? "Arena"
-                  : label === "Explore Events"
-                    ? "Explore"
-                    : label.replace("My ", "")}
+                {to === '/arena'
+                  ? 'Arena'
+                  : label === 'Explore Events'
+                    ? 'Explore'
+                    : label.replace('My ', '')}
               </span>
             </NavLink>
           ))}
         </nav>
       )}
       {flash && (
-        <div
-          role="status"
-          className={`toast ${flash.type === "error" ? "toast-error" : ""}`}
-        >
+        <div role="status" className={`toast ${flash.type === 'error' ? 'toast-error' : ''}`}>
           <CheckCircle2 size={18} />
           {flash.message}
           <button
