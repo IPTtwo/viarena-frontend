@@ -37,10 +37,24 @@ const coreLinks = [
   { to: '/profile', label: 'My Profile', icon: User },
 ];
 const organizerLinks = [
-  { to: '/organizer', label: 'Organizer Dashboard', icon: Home, organizerOnly: true },
-  { to: '/organizer/events/new', label: 'Create Event', icon: Plus, organizerOnly: true },
+  {
+    to: '/organizer',
+    label: 'Organizer Dashboard',
+    icon: Home,
+    organizerOnly: true,
+  },
+  {
+    to: '/organizer/events/new',
+    label: 'Create Event',
+    icon: Plus,
+    organizerOnly: true,
+  },
   { to: '/organizer/events', label: 'Managed Events', icon: CalendarDays },
-  { to: '/organizer/registrations', label: 'Registrations', icon: ClipboardList },
+  {
+    to: '/organizer/registrations',
+    label: 'Registrations',
+    icon: ClipboardList,
+  },
 ];
 const adminLinks = [
   { to: '/admin', label: 'Admin Dashboard', icon: Home },
@@ -145,8 +159,8 @@ export function Shell({ children }) {
                 try {
                   await logout();
                   navigate('/login');
-                } catch (error) {
-                  notify(error.message, 'error');
+                } catch (err) {
+                  notify(err.message, 'error');
                 }
               }}
             >

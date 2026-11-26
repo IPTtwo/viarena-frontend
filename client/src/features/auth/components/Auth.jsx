@@ -3,9 +3,9 @@ import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react
 import { ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 import { useStore } from '../../../state/StoreProvider';
-import { api } from '../../../services/api.js';
 import { validSchoolEmail } from '../../../functions/domain';
 import { Button, Card, Field } from '../../../components';
+import { api } from '../../../services/api.js';
 
 export function Auth({ mode }) {
   const { login, signup, notify, user } = useStore();
@@ -58,8 +58,8 @@ export function Auth({ mode }) {
       if (!form.studentId.trim()) {
         nextErrors.studentId = 'Student ID is required.';
       }
-      if (form.password.length < 8) {
-        nextErrors.password = 'Use at least 8 characters.';
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(form.password)) {
+        nextErrors.password = 'Use 8–128 characters with uppercase, lowercase, and a number.';
       }
       if (form.password !== form.confirm) {
         nextErrors.confirm = 'Passwords do not match.';
@@ -71,8 +71,8 @@ export function Auth({ mode }) {
     }
 
     if (mode === 'reset') {
-      if (form.password.length < 8) {
-        nextErrors.password = 'Use at least 8 characters.';
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(form.password)) {
+        nextErrors.password = 'Use 8–128 characters with uppercase, lowercase, and a number.';
       }
       if (form.password !== form.confirm) {
         nextErrors.confirm = 'Passwords do not match.';
@@ -90,21 +90,15 @@ export function Auth({ mode }) {
     try {
       if (mode === 'forgot' || mode === 'reset') {
         const token = params.get('token');
-
-        if (mode === 'reset' && !token) {
+        if (mode === 'reset' && !token)
           throw new Error('Your password reset link is missing or invalid.');
-        }
-
-        const endpoint = `/auth/${mode === 'forgot' ? 'forgot-password' : 'reset-password'}`;
-
-        const payload =
-          mode === 'forgot' ? { email: form.email } : { token, password: form.password };
-
-        await api(endpoint, {
+        await api(`/auth/${mode === 'forgot' ? 'forgot-password' : 'reset-password'}`, {
           method: 'POST',
-          body: payload,
+          body:
+            mode === 'forgot'
+              ? { email: form.email.trim().toLowerCase() }
+              : { token, password: form.password },
         });
-
         setDone(true);
         return;
       }

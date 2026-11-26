@@ -1,39 +1,39 @@
-import React from 'react';
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
-import { Require, RequireOrganizerWorkspace, Denied, NotFound } from './guards';
-import { BrowsingShell, Shell } from '../components';
-import { Landing } from '../features/auth/components/Landing';
-import { Auth } from '../features/auth/components/Auth';
-import { EventFeed } from '../features/participant/components/EventFeed';
-import { ArenaOverview } from '../features/participant/components/ArenaOverview';
-import { EventDetail } from '../features/participant/components/EventDetail';
-import { RegistrationRedirect } from '../features/participant/components/RegistrationRedirect';
-import { MyEvents } from '../features/participant/components/MyEvents';
-import { Profile } from '../features/participant/components/Profile';
-import { MyTeams } from '../features/participant/components/MyTeams';
-import { TeamDetail } from '../features/participant/components/TeamDetail';
-import { TeamTasks } from '../features/participant/components/TeamTasks';
-import { CalendarView } from '../features/participant/components/CalendarView';
-import { History } from '../features/participant/components/History';
-import { Certificates } from '../features/participant/components/Certificates';
-import { LiveNow } from '../features/organizer/components/LiveNow';
-import { WatchEvent } from '../features/organizer/components/WatchEvent';
-import { OrganizerDashboard } from '../features/organizer/components/OrganizerDashboard';
-import { OrganizerEvents } from '../features/organizer/components/OrganizerEvents';
-import { OrganizerRegistrations } from '../features/organizer/components/OrganizerRegistrations';
-import { EventEditor } from '../features/organizer/components/EventEditor';
-import { RegistrationManager } from '../features/organizer/components/RegistrationManager';
-import { EventTeams } from '../features/organizer/components/EventTeams';
-import { TeamRoleAssignment } from '../features/organizer/components/TeamRoleAssignment';
-import { ScheduleEditor } from '../features/organizer/components/ScheduleEditor';
-import { StreamSettings } from '../features/organizer/components/StreamSettings';
-import { ParticipationManager } from '../features/organizer/components/ParticipationManager';
-import { CoOrganizerManagement } from '../features/organizer/components/CoOrganizerManagement';
-import { AdminDashboard } from '../features/admin/components/AdminDashboard';
-import { AdminEvents } from '../features/admin/components/AdminEvents';
-import { AdminUsers } from '../features/admin/components/AdminUsers';
-import { AdminUserDetail } from '../features/admin/components/AdminUserDetail';
-import { AuditLog } from '../features/admin/components/AuditLog';
+import React from "react";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Require, RequireOrganizerWorkspace, Denied, NotFound } from "./guards";
+import { BrowsingShell, Shell } from "../components";
+import { Landing } from "../features/auth/components/Landing";
+import { Auth } from "../features/auth/components/Auth";
+import { EventFeed } from "../features/participant/components/EventFeed";
+import { ArenaOverview } from "../features/participant/components/ArenaOverview";
+import { EventDetail } from "../features/participant/components/EventDetail";
+import { RegistrationRedirect } from "../features/participant/components/RegistrationRedirect";
+import { MyEvents } from "../features/participant/components/MyEvents";
+import { Profile } from "../features/participant/components/Profile";
+import { MyTeams } from "../features/participant/components/MyTeams";
+import { TeamDetail } from "../features/participant/components/TeamDetail";
+import { TeamTasks } from "../features/participant/components/TeamTasks";
+import { CalendarView } from "../features/participant/components/CalendarView";
+import { History } from "../features/participant/components/History";
+import { Certificates } from "../features/participant/components/Certificates";
+import { LiveNow } from "../features/organizer/components/LiveNow";
+import { WatchEvent } from "../features/organizer/components/WatchEvent";
+import { OrganizerDashboard } from "../features/organizer/components/OrganizerDashboard";
+import { OrganizerEvents } from "../features/organizer/components/OrganizerEvents";
+import { OrganizerRegistrations } from "../features/organizer/components/OrganizerRegistrations";
+import { EventEditor } from "../features/organizer/components/EventEditor";
+import { RegistrationManager } from "../features/organizer/components/RegistrationManager";
+import { EventTeams } from "../features/organizer/components/EventTeams";
+import { TeamRoleAssignment } from "../features/organizer/components/TeamRoleAssignment";
+import { ScheduleEditor } from "../features/organizer/components/ScheduleEditor";
+import { StreamSettings } from "../features/organizer/components/StreamSettings";
+import { ParticipationManager } from "../features/organizer/components/ParticipationManager";
+import { CoOrganizerManagement } from "../features/organizer/components/CoOrganizerManagement";
+import { AdminDashboard } from "../features/admin/components/AdminDashboard";
+import { AdminEvents } from "../features/admin/components/AdminEvents";
+import { AdminUsers } from "../features/admin/components/AdminUsers";
+import { AdminUserDetail } from "../features/admin/components/AdminUserDetail";
+import { AuditLog } from "../features/admin/components/AuditLog";
 
 function AppLayout() {
   return (
@@ -76,13 +76,19 @@ export function AppRoutes() {
           </Require>
         }
       >
-        <Route path="/events/:eventId/register" element={<RegistrationRedirect />} />
+        <Route
+          path="/events/:eventId/register"
+          element={<RegistrationRedirect />}
+        />
         <Route path="/my-events" element={<MyEvents />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<Profile edit />} />
         <Route path="/my-teams" element={<MyTeams />} />
         <Route path="/events/:eventId/teams/:teamId" element={<TeamDetail />} />
-        <Route path="/events/:eventId/teams/:teamId/tasks" element={<TeamTasks />} />
+        <Route
+          path="/events/:eventId/teams/:teamId/tasks"
+          element={<TeamTasks />}
+        />
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/history" element={<History />} />
         <Route path="/certificates" element={<Certificates />} />
