@@ -1,125 +1,42 @@
-# ViArena Frontend | Organized React Project
+# ViArena frontend
 
-This is the organized, frontend-first ViArena implementation based on the revised IPT2 product specification. It includes screens for Participant, Organizer, and Admin roles and scoped event teams.
+React/Vite client for https://github.com/IPTtwo/viarena-backend. Accounts and workspace data use the API; browser demo accounts/localStorage are no longer the data source. Existing feature folders and JavaScript/JSX architecture are preserved.
 
-## Setup in VS Code
+## Local development
 
-Open the folder containing `package.json` (the `client` folder) in a terminal:
+Use Node.js 20+ (22 or 24 recommended). Run from this client directory after all integration tickets are merged:
 
-```bash
+```powershell
 npm ci
+Copy-Item .env.example .env
 npm run dev
 ```
 
-Open the Vite URL shown in the terminal. To run local tests:
+Run the backend separately on port 5000 with its private MONGODB_URI. Frontend defaults to port 5173 and proxies /api to http://127.0.0.1:5000. Example environment: VITE_API_BASE_URL=/api and API_PROXY_TARGET=http://127.0.0.1:5000. Never put database credentials in frontend files or VITE variables.
 
-```bash
+## Verify
+
+```powershell
 npm test
 npm run build
 npm run format:check
 ```
 
-The Node tests cover Arena event selection, including draft visibility, ordering, and live-event boundaries. The build checks the production bundle. Run browser checks separately to verify the UI.
+Browser tests need the backend repository as a sibling named viarena-backend with its dependencies installed. Alternatively set BACKEND_DIR to its absolute path. Tests start a disposable database and servers on 5001, 5174 and 5175. They do not use Atlas or backend .env.
 
-`npm ci` installs dependencies into `node_modules/`. That folder is local-only and is ignored by Git. The exact dependency versions are recorded in `package-lock.json`.
-
-To create the production bundle:
-
-```bash
-npm run build
+```powershell
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Vite writes the generated files to `dist/`. The `dist/` folder is also ignored by Git and can be regenerated at any time. Edit files under `src/`, not `dist/`.
+## Production
 
-## Demo accounts for local UI checks
+Build with npm ci --include=dev and npm run build. Set runtime API_PROXY_TARGET to the backend HTTPS origin (without /api), build-time VITE_API_BASE_URL to /api, and run npm start. The included Express server serves dist, handles SPA route refreshes and proxies API requests/cookies. It reads PORT (default 5173) and serves /healthz for process health. Supply runtime environment variables through your host or shell; this server does not load Vite .env automatically. Use HTTPS for production Secure cookies.
 
-These are **development fixtures only**. They are not real accounts and they are not safe to deploy.
+TRUST_PROXY_HOPS defaults to zero. Set a bounded value only for a known trusted hosting proxy chain. Cross-site API calls require separate cookie/CSRF configuration.
 
-| View        | Email                   | Fixture password |
-| ----------- | ----------------------- | ---------------- |
-| Admin       | `admin@adnu.edu.ph`     | `pa55`           |
-| Organizer   | `organizer@adnu.edu.ph` | `pa55`           |
-| Participant | `yjw@adnu.edu.ph`       | `pa55`           |
+## Structure and behavior
 
-New accounts are always Participants. The sign-up form requires a password with at least 8 characters. The fixture passwords above are independent of sign-up policy. Data are stored in the **local browser** using keys beginning with `viarena_p2_`; to reset the preview, delete those keys using browser developer tools. Do not use this local storage implementation as production authentication or authorization.
+Routes/guards: src/app; shared controls/navigation: src/components; feature screens: src/features; pure helpers: src/functions; request/normalization: src/services; API state: src/state/StoreProvider.jsx; CSS: src/styles. Preserve this structure when extending the app.
 
-Password recovery requires a real API configured via `VITE_API_BASE_URL` and is not functional without it. No Express/MongoDB server implementation is bundled.
-
-## Code structure
-
-```text
-client/
-  src/
-    app/                 Router and protected route wrappers
-    assets/              Brand assets
-    components/
-      ui/                Public barrel for reusable buttons, cards, fields, dialogs, badges
-      navigation/        Public barrel for sidebar and guest/app layouts
-      events/            Reusable event-related controls
-      index.js           Single public entry point for shared components
-    data/                Development fixtures
-    features/
-      auth/components/   Sign in, sign up, recovery and landing
-      participant/components/  Events, profile, calendar, teams, tasks, history, certificates
-      organizer/components/    Event editing, team roles, schedules, streaming and registration tools
-      admin/components/       User management, audit, event oversight
-      admin/hooks/            Admin-specific React hooks
-      participant/components/arena/  Arena event links and poster presentation
-      participant/functions/  Pure Arena event selection logic
-    functions/           Pure JavaScript: permissions, validation, filtering, formatting, embed URLs
-    state/               Centralized frontend state and local persistence
-    styles/              Global tokens, shared layout, separate role-specific CSS
-    types/               TypeScript data types (no runtime logic)
-    main.jsx             React entry point
-  tests/                 Node tests for business logic
-```
-
-**Components** are React `.jsx` modules under `components/` or the corresponding `features/*/components/` folder. Import shared components through `components/index.js` or its grouped barrels (`components/ui`, `components/navigation`, and `components/events`) instead of importing implementation files throughout the app. Feature-specific screens stay inside their feature folder. **Functions** are business logic `.js` modules under `functions/` or role-specific `features/*/functions/`. **Types** are in `.ts`; all styling remains in `.css` files. This preserves JavaScript React without a disruptive migration of every existing component to TypeScript.
-
-## Routing
-
-Application routes are defined in `src/app/AppRoutes.jsx`. Authentication and role checks are kept in `src/app/guards.jsx`. Public event pages, authenticated participant pages, organizer tools, and admin pages are separated by route and protected where required.
-
-## Where to make changes
-
-| Task | Start here |
-| --- | --- |
-| Add or change a route | `src/app/AppRoutes.jsx` |
-| Change sidebar or guest navigation | `src/components/navigation/` |
-| Change the Arena page | `src/features/participant/components/ArenaOverview.jsx` |
-| Change Arena posters or event links | `src/features/participant/components/arena/` |
-| Change which events appear in the Arena | `src/features/participant/functions/arena.js` |
-| Change shared colors or spacing | `src/styles/tokens.css` |
-| Change Arena styling | `src/styles/arena.css` (all Arena-specific CSS lives here) |
-| Change reusable UI | `src/components/ui/` |
-| Change saved data or account behavior | `src/state/StoreProvider.jsx` |
-
-Keep page composition in the page component, small presentation pieces in a nearby component folder, pure calculations in `functions/`, and React hooks in `hooks/`. Avoid creating empty placeholder folders or importing unused components in anticipation of future work.
-
-Run `npm run format` to format source and tests, and `npm run format:check` before a commit. Prettier is a development-only dependency. Playwright is also installed for future browser checks; download its browser with `npx playwright install chromium`. No Playwright test suite is configured yet.
-
-Personal `.codex/` hooks and `.vscode/` tasks are ignored because they can contain machine-specific paths. They remain available locally. Generated bundles, dependencies, browser reports, and test artifacts are also ignored.
-
-## Product rules
-
-- Primary color `#00296B` and Poppins, spacing based on 4 px increments.
-- No Participant dashboard. `/dashboard` redirects to `/events`.
-- No public role dropdown or Organizer access applications. Admins appoint Organizers.
-- Organizers assign Team Managers and Handlers for event-specific teams. Team Managers coordinate their assigned teams but cannot appoint team leaders.
-- Only authorized event staff can edit official event schedules. Participants, Handlers, and Team Managers view them without edit/request controls.
-- The logo opens `/arena`; profile links remain available in account navigation.
-- Draft events are hidden from public discovery. Published events support participant registration and cancellation.
-- Certificates are downloadable as SVG **after a local participation-verification record**.
-- YouTube streams may be embedded; unsupported embedding has an external-link fallback.
-
-## What is implemented versus what is not
-
-**Implemented as frontend flows:** all routes in the revised 35-frame inventory, shared responsive navigation, form controls, event management, event-based teams and task controls, view-only calendar and schedule editor, streams/watch page, history, certificate download, Admin role assignment and audit screens.
-
-**Not implemented as deployable backend functionality:** Express/MongoDB APIs, secured sessions, emailed password reset, server-enforced RBAC, concurrent registration capacity protection, durable shared multi-user persistence, official certificate verification, or live streaming infrastructure. Data changes occur only in each browser's local storage.
-
-Do not deploy the preview with real student information or rely on frontend guards as authorization. Server APIs and verified sessions must replace the development store before production use.
-
-## GitHub collaboration
-
-Use one ticket per branch and one pull request per ticket. Keep generated folders such as `node_modules/` and `dist/` out of commits. The route integration and reusable component structure are now part of the main application; future changes should build on `src/app/` and `src/components/`.
+Signup creates Participant and then explicitly logs in. Admin assigns Organizer with an audit reason. No production accounts are seeded. Passwords require 8–128 characters with uppercase, lowercase and a digit. Reset endpoints exist but email delivery is not implemented; development reset links are logged by the backend. Images remain bounded JSON/data URLs; there is no multipart upload service.
